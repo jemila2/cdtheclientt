@@ -138,8 +138,8 @@
 // export default Register;
 
 
-// components/RegistrationForm.jsx
 import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom'; // Add these imports
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
@@ -154,6 +154,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const { register } = useAuth();
+  const navigate = useNavigate(); // Initialize navigate
 
   const validateForm = () => {
     const newErrors = {};
@@ -207,10 +208,9 @@ const Register = () => {
       
       if (result.success) {
         toast.success('Registration successful! Welcome!');
-       
-        window.location.href = '/dashboard';
+        // Use navigate instead of window.location.href for SPA routing
+        navigate('/dashboard');
       } else {
-       
         if (result.message.includes('already exists')) {
           setErrors({ email: result.message });
         } else {
@@ -221,7 +221,6 @@ const Register = () => {
       console.error('Registration error:', error);
       toast.error('Registration failed. Please try again.');
       
-    
       if (error.response?.data?.errors) {
         const serverErrors = {};
         error.response.data.errors.forEach(err => {
@@ -252,115 +251,122 @@ const Register = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <div className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1"> {/* Changed to label */}
+              Full Name
+            </label> {/* Changed to label */}
+            <input
+              type="text"
+              id="name" // Added id for accessibility
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className={`w-full p-2 border rounded ${
+                errors.name ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="Enter your full name"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+            )}
           </div>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            placeholder="Enter your full name"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-          )}
-        </div>
 
-        <div>
-          <div className="block text-sm font-medium text-gray-700 mb-1">
-            Email Address
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1"> {/* Changed to label */}
+              Email Address
+            </label> {/* Changed to label */}
+            <input
+              type="email"
+              id="email" // Added id for accessibility
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full p-2 border rounded ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="Enter your email"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            placeholder="Enter your email"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-          )}
-        </div>
 
-        <div>
-          <div className="block text-sm font-medium text-gray-700 mb-1">
-            Phone Number (Optional)
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1"> {/* Changed to label */}
+              Phone Number (Optional)
+            </label> {/* Changed to label */}
+            <input
+              type="tel"
+              id="phone" // Added id for accessibility
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your phone number"
+            />
           </div>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your phone number"
-          />
-        </div>
 
-        <div>
-          <div className="block text-sm font-medium text-gray-700 mb-1">
-            Password
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1"> {/* Changed to label */}
+              Password
+            </label> {/* Changed to label */}
+            <input
+              type="password"
+              id="password" // Added id for accessibility
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`w-full p-2 border rounded ${
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="Create a password"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
           </div>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded ${
-              errors.password ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            placeholder="Create a password"
-          />
-          {errors.password && (
-            <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-          )}
-        </div>
 
-        <div>
-          <div className="block text-sm font-medium text-gray-700 mb-1">
-            Confirm Password
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1"> {/* Changed to label */}
+              Confirm Password
+            </label> {/* Changed to label */}
+            <input
+              type="password"
+              id="confirmPassword" // Added id for accessibility
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={`w-full p-2 border rounded ${
+                errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="Confirm your password"
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+            )}
           </div>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded ${
-              errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            placeholder="Confirm your password"
-          />
-          {errors.confirmPassword && (
-            <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
-          )}
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Creating Account...' : 'Create Account'}
-        </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </button>
 
-        <p className="text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <a href="/login" className="text-blue-600 hover:underline">
-            Sign in here
-          </a>
-        </p>
-      </form>
+          <p className="text-center text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="text-blue-600 hover:underline"> {/* Changed to Link */}
+              Sign in here
+            </Link> {/* Changed to Link */}
+          </p>
+        </form>
+      </div>
     </div>
   );
 };
