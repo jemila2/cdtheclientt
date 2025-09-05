@@ -2,14 +2,12 @@
 // export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com';
 
 import axios from 'axios';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:10000';
-
 const api = axios.create({
-  baseURL: `${API_BASE_URL}`,
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com/api',
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
 });
 
 // Request interceptor
@@ -192,6 +190,7 @@ export const updateCustomer = async (id, customerData) => {
 
 
 export default api;
+
 
 
 
