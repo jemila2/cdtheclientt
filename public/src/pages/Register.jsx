@@ -310,7 +310,7 @@ const Register = () => {
 
         <div>
           <div className="block text-sm font-medium text-gray-700 mb-1">
-            Password
+            Passwordrrrrr
           </div>
           <input
             type="password"
@@ -364,5 +364,6 @@ const Register = () => {
     </div>
   );
 };
+
 
 export default Register;
