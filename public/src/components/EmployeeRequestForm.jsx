@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
 const EmployeeRequestForm = () => {
-  const { user, api } = useAuth(); // ← Get the api instance
+  const { user, api } = useAuth();
   const [formData, setFormData] = useState({
     position: '',
     experience: '',
@@ -29,20 +28,66 @@ const EmployeeRequestForm = () => {
         requestedAt: new Date().toISOString()
       };
 
-      // Use the api instance from AuthContext
+      // DEBUG: Log what we're sending
+      console.log('Submitting employee request:', requestData);
+      
+      // Use the api instance but with the correct endpoint
+      // If your api instance already adds /api, use '/employee-requests'
+      // If it doesn't, use '/api/employee-requests'
       await api.post('/employee-requests', requestData);
       
       toast.success('Employee request submitted! An admin will review your application.');
       setHasRequested(true);
     } catch (error) {
       console.error('Request error:', error);
-      if (error.response?.status === 404) {
-        toast.error('Server endpoint not found. Please contact support.');
+      
+      // More detailed error handling
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
+        
+        if (error.response.status === 404) {
+          toast.error('Server endpoint not found. Please contact support.');
+        } else if (error.response.status === 500) {
+          toast.error('Server error. Please try again later.');
+        } else {
+          toast.error(`Error: ${error.response.data.message || 'Failed to submit request'}`);
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('No response received:', error.request);
+        toast.error('No response from server. Please check your connection.');
       } else {
+        // Something happened in setting up the request
+        console.error('Request setup error:', error.message);
         toast.error('Failed to submit employee request. Please try again.');
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Test the API endpoint directly as a debug option
+  const testEndpoint = async () => {
+    try {
+      console.log('Testing endpoint...');
+      // Try different endpoint variations to see what works
+      const response1 = await fetch('https://backend-21-2fu1.onrender.com/api/employee-requests', {
+        method: 'OPTIONS' // Use OPTIONS to check if endpoint exists without sending data
+      });
+      console.log('Direct fetch test result:', response1.status, response1.statusText);
+      
+      // Also test what your api instance is doing
+      try {
+        const response2 = await api.get('/employee-requests');
+        console.log('API instance test result:', response2.status);
+      } catch (apiError) {
+        console.error('API instance test failed:', apiError);
+      }
+    } catch (error) {
+      console.error('Endpoint test failed:', error);
     }
   };
 
@@ -64,6 +109,15 @@ const EmployeeRequestForm = () => {
       <p className="text-gray-600 mb-4">
         Fill out this form to request becoming an employee. An admin will review your request.
       </p>
+      
+      {/* Debug button - you can remove this in production */}
+      <button 
+        onClick={testEndpoint}
+        className="mb-4 px-3 py-1 bg-gray-200 text-xs rounded"
+        type="button"
+      >
+        Test Endpoint Connection
+      </button>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
