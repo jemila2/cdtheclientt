@@ -3,9 +3,8 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-// Create axios instance with base URL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -528,3 +527,4 @@ export const useAuth = () => {
   }
   return context;
 };
+
