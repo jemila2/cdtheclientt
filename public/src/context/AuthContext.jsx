@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -526,6 +526,7 @@ export const useAuth = () => {
   }
   return context;
 };
+
 
 
 
