@@ -1,12 +1,16 @@
-
-
-
-
-
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
+
+// Create axios instance with base URL
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -19,14 +23,6 @@ export function AuthProvider({ children }) {
   const [customersLoading, setCustomersLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
-  
-const apiRequest = async (endpoint, options = {}) => {
-  // Remove the /api prefix since your backend already has it
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com';
-  const url = `${API_BASE_URL}${endpoint}`; // Remove /api from here
-  
-  // ... rest of the function remains the same
-};
 
   // Enhanced interceptors
   api.interceptors.request.use((config) => {
@@ -97,7 +93,6 @@ const apiRequest = async (endpoint, options = {}) => {
     }
   };
 
-  // FIXED: Removed merge conflict and simplified login
   const login = async (email, password) => {
     try {
       const response = await api.post('/auth/login', { email, password });
@@ -120,9 +115,10 @@ const apiRequest = async (endpoint, options = {}) => {
         user: normalizedUser 
       };
     } catch (error) {
+      console.error('Login error:', error.response?.data || error.message);
       return { 
         success: false, 
-        message: error.response?.data?.message || 'Login failed' 
+        message: error.response?.data?.message || error.response?.data?.error || 'Login failed' 
       };
     }
   };
@@ -147,8 +143,8 @@ const apiRequest = async (endpoint, options = {}) => {
         user: response.data.user 
       };
     } catch (error) {
-      console.error('Registration error:', error);
-      throw new Error(error.response?.data?.message || 'Registration failed');
+      console.error('Registration error:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || error.response?.data?.error || 'Registration failed');
     }
   };
 
@@ -176,7 +172,7 @@ const apiRequest = async (endpoint, options = {}) => {
       setUsers(usersData);
       return { success: true, data: usersData };
     } catch (err) {
-      console.error('Error fetching users:', err);
+      console.error('Error fetching users:', err.response?.data || err.message);
       setUsers([]);
       throw err.response?.data || err;
     } finally {
@@ -196,7 +192,7 @@ const apiRequest = async (endpoint, options = {}) => {
       localStorage.setItem('user', JSON.stringify(updatedUser));
       return { success: true, user: updatedUser };
     } catch (err) {
-      console.error('Update error:', err);
+      console.error('Update error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Update failed');
     }
   };
@@ -207,7 +203,7 @@ const apiRequest = async (endpoint, options = {}) => {
       const response = await api.post('/orders', orderData);
       return { success: true, order: response.data.order };
     } catch (err) {
-      console.error('Order creation error:', err);
+      console.error('Order creation error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Order creation failed');
     }
   };
@@ -224,7 +220,7 @@ const apiRequest = async (endpoint, options = {}) => {
       setOrders(ordersData);
       return { success: true, data: ordersData };
     } catch (err) {
-      console.error('Error fetching orders:', err);
+      console.error('Error fetching orders:', err.response?.data || err.message);
       setOrders([]);
       throw err.response?.data || err;
     } finally {
@@ -237,7 +233,7 @@ const apiRequest = async (endpoint, options = {}) => {
       const response = await api.patch(`/orders/${orderId}/status`, { status });
       return { success: true, order: response.data.order };
     } catch (err) {
-      console.error('Order status update error:', err);
+      console.error('Order status update error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Order status update failed');
     }
   };
@@ -247,7 +243,7 @@ const apiRequest = async (endpoint, options = {}) => {
       const response = await api.post(`/orders/${orderId}/complete`);
       return { success: true, order: response.data.order };
     } catch (err) {
-      console.error('Order completion error:', err);
+      console.error('Order completion error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Order completion failed');
     }
   };
@@ -265,7 +261,7 @@ const apiRequest = async (endpoint, options = {}) => {
       setSuppliers(suppliersData);
       return { success: true, data: suppliersData };
     } catch (err) {
-      console.error('Error fetching suppliers:', err);
+      console.error('Error fetching suppliers:', err.response?.data || err.message);
       setSuppliers([]);
       throw err.response?.data || err;
     } finally {
@@ -279,7 +275,7 @@ const apiRequest = async (endpoint, options = {}) => {
       setSuppliers(prev => [...prev, response.data.supplier]);
       return { success: true, supplier: response.data.supplier };
     } catch (err) {
-      console.error('Supplier creation error:', err);
+      console.error('Supplier creation error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Supplier creation failed');
     }
   };
@@ -294,7 +290,7 @@ const apiRequest = async (endpoint, options = {}) => {
       );
       return { success: true, supplier: response.data.supplier };
     } catch (err) {
-      console.error('Supplier update error:', err);
+      console.error('Supplier update error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Supplier update failed');
     }
   };
@@ -305,7 +301,7 @@ const apiRequest = async (endpoint, options = {}) => {
       setSuppliers(prev => prev.filter(supplier => supplier._id !== id));
       return { success: true };
     } catch (err) {
-      console.error('Supplier deletion error:', err);
+      console.error('Supplier deletion error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Supplier deletion failed');
     }
   };
@@ -323,7 +319,7 @@ const apiRequest = async (endpoint, options = {}) => {
       setCustomers(customersData);
       return { success: true, data: customersData };
     } catch (err) {
-      console.error('Error fetching customers:', err);
+      console.error('Error fetching customers:', err.response?.data || err.message);
       setCustomers([]);
       throw err.response?.data || err;
     } finally {
@@ -337,7 +333,7 @@ const apiRequest = async (endpoint, options = {}) => {
       setCustomers(prev => [...prev, response.data.customer]);
       return { success: true, customer: response.data.customer };
     } catch (err) {
-      console.error('Customer creation error:', err);
+      console.error('Customer creation error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Customer creation failed');
     }
   };
@@ -352,7 +348,7 @@ const apiRequest = async (endpoint, options = {}) => {
       );
       return { success: true, customer: response.data.customer };
     } catch (err) {
-      console.error('Customer update error:', err);
+      console.error('Customer update error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Customer update failed');
     }
   };
@@ -363,7 +359,7 @@ const apiRequest = async (endpoint, options = {}) => {
       setCustomers(prev => prev.filter(customer => customer._id !== id));
       return { success: true };
     } catch (err) {
-      console.error('Customer deletion error:', err);
+      console.error('Customer deletion error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Customer deletion failed');
     }
   };
@@ -393,12 +389,7 @@ const apiRequest = async (endpoint, options = {}) => {
         inProgress: response.data.data?.inProgress ?? 0
       };
     } catch (error) {
-      console.error('Employee stats fetch error:', {
-        endpoint: `/employees/${employeeId}/stats`,
-        status: error.response?.status,
-        error: error.message,
-        responseData: error.response?.data
-      });
+      console.error('Employee stats fetch error:', error.response?.data || error.message);
       
       return {
         pending: 0,
@@ -417,7 +408,7 @@ const apiRequest = async (endpoint, options = {}) => {
       const response = await api.get(`/tasks/employee/${employeeId}`);
       return { success: true, data: response.data };
     } catch (err) {
-      console.error('Error fetching employee tasks:', err);
+      console.error('Error fetching employee tasks:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Failed to fetch tasks');
     }
   };
@@ -427,7 +418,7 @@ const apiRequest = async (endpoint, options = {}) => {
       const response = await api.patch(`/tasks/${taskId}/status`, { status });
       return { success: true, task: response.data.task };
     } catch (err) {
-      console.error('Task status update error:', err);
+      console.error('Task status update error:', err.response?.data || err.message);
       throw new Error(err.response?.data?.message || 'Task status update failed');
     }
   };
@@ -439,7 +430,7 @@ const apiRequest = async (endpoint, options = {}) => {
       localStorage.setItem('token', response.data.token);
       return { success: true, token: response.data.token };
     } catch (err) {
-      console.error('Token refresh error:', err);
+      console.error('Token refresh error:', err.response?.data || err.message);
       logout();
       throw new Error(err.response?.data?.message || 'Token refresh failed');
     }
@@ -460,15 +451,13 @@ const apiRequest = async (endpoint, options = {}) => {
       console.log('Backend connection successful:', response.data);
       return { success: true, data: response.data };
     } catch (error) {
-      console.error('Backend connection failed:', error.message);
+      console.error('Backend connection failed:', error.response?.data || error.message);
       return { success: false, error: error.message };
     }
   };
 
   useEffect(() => {
     loadUser();
-    // Test connection on component mount
-    testConnection();
   }, []);
 
   const value = useMemo(() => ({
@@ -539,6 +528,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-
-
