@@ -617,16 +617,13 @@ export function AuthProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
   
+const apiRequest = async (endpoint, options = {}) => {
+  // Remove the /api prefix since your backend already has it
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com';
-  const api = axios.create({
-    baseURL: `${API_BASE_URL}/api`, 
-    timeout: 15000, // Increased timeout for Render cold starts
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  });
-
+  const url = `${API_BASE_URL}${endpoint}`; // Remove /api from here
+  
+  // ... rest of the function remains the same
+};
   // Enhanced interceptors
   api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
@@ -1138,3 +1135,4 @@ export const useAuth = () => {
   }
   return context;
 };
+
