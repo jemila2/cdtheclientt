@@ -159,7 +159,9 @@
 // export default Login;
 
 
+
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Add this import
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
@@ -170,6 +172,7 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -181,25 +184,29 @@ const Login = () => {
       if (result.success) {
         toast.success(`Welcome back, ${result.user.name}!`);
         
-        // Redirect based on role
+        // Use navigate instead of window.location.href for SPA routing
         switch(result.user.role) {
           case 'admin':
-            window.location.href = '/admin/dashboard';
+            navigate('/admin/dashboard');
             break;
           case 'employee':
-            window.location.href = '/employee/dashboard';
+            navigate('/employee/dashboard');
             break;
           case 'supplier':
-            window.location.href = '/supplier/dashboard';
+            navigate('/supplier/dashboard');
+            break;
+          case 'customer':
+            navigate('/customer/dashboard');
             break;
           default:
-            window.location.href = '/dashboard';
+            navigate('/dashboard');
         }
       } else {
-        toast.error(result.message);
+        toast.error(result.message || 'Login failed');
       }
     } catch (error) {
-      toast.error('Login failed. Please try again.');
+      console.error('Login error:', error);
+      toast.error(error.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -219,9 +226,9 @@ const Login = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <div htmlFor="email-address" className="sr-only">
+              <label htmlFor="email-address" className="sr-only"> {/* Changed to label */}
                 Email address
-              </div>
+              </label> {/* Changed to label */}
               <input
                 id="email-address"
                 name="email"
@@ -235,9 +242,9 @@ const Login = () => {
               />
             </div>
             <div>
-              <div htmlFor="password" className="sr-only">
+              <label htmlFor="password" className="sr-only"> {/* Changed to label */}
                 Password
-              </div>
+              </label> {/* Changed to label */}
               <input
                 id="password"
                 name="password"
@@ -260,9 +267,9 @@ const Login = () => {
                 type="checkbox"
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <div htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900"> {/* Changed to label */}
                 Remember me
-              </div>
+              </label> {/* Changed to label */}
             </div>
 
             <div className="text-sm">
