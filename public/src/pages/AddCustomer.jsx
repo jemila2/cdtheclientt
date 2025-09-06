@@ -13,13 +13,14 @@ const AddCustomer = () => {
   const { token, user } = useAuth(); 
   const navigate = useNavigate();
 
+  // Get API base URL from environment variable or use default
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://backend-21-2fu1.onrender.com';
  
   useEffect(() => {
     if (user && user.role !== 'admin') {
       navigate('/unauthorized');
     }
   }, [user, navigate]);
-
 
   if (user && user.role !== 'admin') {
     return (
@@ -59,7 +60,7 @@ const AddCustomer = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch('http://localhost:5000/api/customers', {
+      const response = await fetch(`${API_BASE_URL}/api/customers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,48 +97,48 @@ const AddCustomer = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <div className="block text-gray-700 mb-2" htmlFor="name">
+          <label className="block text-gray-700 mb-2" htmlFor="name">
             Name *
-            <input
-              type="text"
-              id="name"
-              name="name"
-              className="mt-1 block w-full px-3 py-2 border rounded"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            className="mt-1 block w-full px-3 py-2 border rounded"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <div className="mb-4">
-          <div className="block text-gray-700 mb-2" htmlFor="phone">
+          <label className="block text-gray-700 mb-2" htmlFor="phone">
             Phone *
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              className="mt-1 block w-full px-3 py-2 border rounded"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            className="mt-1 block w-full px-3 py-2 border rounded"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <div className="mb-6">
-          <div className="block text-gray-700 mb-2" htmlFor="address">
+          <label className="block text-gray-700 mb-2" htmlFor="address">
             Address *
-            <textarea
-              id="address"
-              name="address"
-              className="mt-1 block w-full px-3 py-2 border rounded"
-              rows="3"
-              value={formData.address}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          </label>
+          <textarea
+            id="address"
+            name="address"
+            className="mt-1 block w-full px-3 py-2 border rounded"
+            rows="3"
+            value={formData.address}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <button
